@@ -47,14 +47,15 @@ parser.add_argument('--dataset_type', type=str, default='cifar10', metavar='N', 
                         help='dataset type')
 args = parser.parse_args()
 
-if args.use_gpu == 0:
-    print('use gpu')
-    torch.set_default_tensor_type(torch.cuda.FloatTensor)
-else:
-    torch.set_default_tensor_type(torch.FloatTensor)
+#if args.use_gpu == 0:
+#    print('use gpu')
+#    torch.set_default_tensor_type(torch.cuda.FloatTensor)
+#else:
+torch.set_default_tensor_type(torch.FloatTensor)
 #torch.cuda.manual_seed(args.seed) #<--random seed for one GPU
 #torch.cuda.manual_seed_all(args.seed) #<--random seed for multiple GPUs
-device_gpu = torch.device("cuda" if args.use_gpu == 0 else "cpu")
+#device_gpu = torch.device("cuda" if args.use_gpu == 0 else "cpu")
+device_gpu = torch.device("cpu")
 # Configurations are in a separate config.py file
 
 device_num = args.device_num
@@ -95,7 +96,7 @@ if args.dataset_type == 'cifar100':
                                     transforms.ToTensor(),
                                     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                                 ])
-    trainset = datasets.ImageFolder('/data/zywang/Dataset/cifar100_coopfl/train', transform = transform)
+    trainset = datasets.ImageFolder('/Users/brladder77/Dataset/cifar100_coopfl/train', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
 
 elif args.dataset_type == 'cifar10':
@@ -105,7 +106,7 @@ elif args.dataset_type == 'cifar10':
                                     transforms.ToTensor(),
                                     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                                 ])
-    trainset = datasets.CIFAR10('/data/zywang/Dataset/cifar10', download=True, train=True, transform=transform)
+    trainset = datasets.CIFAR10('/Users/brladder77/Dataset/cifar10', download=True, train=True, transform=transform)
  #   trainset = datasets.ImageFolder('/data/zywang/Dataset/cifar_coopfl/train', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
 
@@ -117,7 +118,7 @@ elif args.dataset_type == 'emnist':
                            transforms.ToTensor(),
                           transforms.Normalize((0.1307,), (0.3081,))
           ])
-    trainset = datasets.ImageFolder('/data/zywang/Dataset/emnist_coopfl', transform = transform)
+    trainset = datasets.ImageFolder('/Users/brladder77/Dataset/emnist_coopfl', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=256, shuffle=True)
 
 elif args.dataset_type == 'image' and args.model_type != "AlexNet":
@@ -127,7 +128,7 @@ elif args.dataset_type == 'image' and args.model_type != "AlexNet":
                                   transforms.ToTensor(),
                                   transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                               ])
-    trainset = datasets.ImageFolder('/data/zywang/Dataset/image_coopfl/train', transform = transform)
+    trainset = datasets.ImageFolder('/Users/brladder77/Dataset/image_coopfl/train', transform = transform)
     #trainset = datasets.ImageFolder('/data/zywang/PartImagenet/train', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=True)
 
@@ -138,7 +139,7 @@ elif args.dataset_type == 'image' and args.model_type == "AlexNet":
                                   transforms.ToTensor(),
                                   transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                               ])
-    trainset = datasets.ImageFolder('/data/zywang/Dataset/image_coopfl/train', transform = transform)
+    trainset = datasets.ImageFolder('/Users/brladder77/Dataset/image_coopfl/train', transform = transform)
     #trainset = datasets.ImageFolder('/data/zywang/PartImagenet/train', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=True)
 
@@ -161,6 +162,8 @@ def local_train(sock, models, partition_way):
                 models[i].train()
         count=-1
     # forward
+        num_batches = len(trainloader)
+        print(num_batches)
         for images, labels in trainloader:
             count+=1
             if count%10 == 0:

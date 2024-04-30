@@ -44,12 +44,14 @@ parser.add_argument('--dataset_type', type=str, default='cifar10', metavar='N', 
                         help='dataset type')
 args = parser.parse_args()
 
-if True:
-    torch.set_default_tensor_type(torch.cuda.FloatTensor)
-else:
-    torch.set_default_tensor_type(torch.FloatTensor)
-device_gpu = torch.device("cuda" if True else "cpu")
-   
+#if True:
+#    torch.set_default_tensor_type(torch.cuda.FloatTensor)
+#else:
+torch.set_default_tensor_type(torch.FloatTensor)
+#device_gpu = torch.device("cuda" if True else "cpu")
+device_gpu = torch.device("cpu")
+#only use CPU because of mac
+
 lr = 0.01
 device_num = args.device_num
 edge_num = args.edge_number
@@ -58,6 +60,7 @@ delay_gap = 10
 epoch_max = 500
 acc_count = []
 criterion = nn.NLLLoss()
+#get informations
 
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -114,7 +117,7 @@ def test(models, dataloader, dataset_name, epoch, start_time):
     end_time = time.time()
     a,b = time_duration(start_time, end_time)
     printer("Epoch {} Duration {}s {}ms Testing loss: {}".format(epoch,a,b,loss/len(dataloader)))
-    printer("{}: Accuracy {}/{} ({:.0f}%)".format(dataset_name, 
+    printer("{}: Accuracy {}/{} ({:.0f}%)".format(dataset_name,
                                                 correct,
                                                 len(dataloader.dataset),
                                                 100. * correct / len(dataloader.dataset)))
@@ -122,23 +125,23 @@ def test(models, dataloader, dataset_name, epoch, start_time):
 
 if args.dataset_type == 'cifar100':
     print("cifar100")
-    transform = transforms.Compose([ 
+    transform = transforms.Compose([
                                #     transforms.RandomCrop(32, padding=4),
                                 #    transforms.RandomHorizontalFlip(),
                                     transforms.ToTensor(),
                                     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                                 ])
-    testset = datasets.ImageFolder('/data/zywang/Dataset/test_cifar100', transform=transform)
+    testset = datasets.ImageFolder('/Users/brladder77/Dataset/test_cifar100', transform=transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=256, shuffle=False)
 
 elif args.dataset_type == 'cifar10':
-    transform = transforms.Compose([ 
+    transform = transforms.Compose([
                                 #    transforms.RandomCrop(32, padding=4),
                                 #    transforms.RandomHorizontalFlip(),
                                     transforms.ToTensor(),
                                     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                                 ])
-    testset = datasets.ImageFolder('/data/zywang/Dataset/cifar10/test', transform=transform)
+    testset = datasets.CIFAR10('/Users/brladder77/Dataset/cifar10', transform=transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=256, shuffle=False)
 
 elif args.dataset_type == 'emnist':
@@ -149,7 +152,7 @@ elif args.dataset_type == 'emnist':
                            transforms.ToTensor(),
                           transforms.Normalize((0.1307,), (0.3081,))
           ])
-    testset = datasets.ImageFolder('/data/zywang/Dataset/emnist/byclass_test', transform = transform)
+    testset = datasets.ImageFolder('/Users/brladder77/Dataset/emnist/byclass_test', transform = transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=512, shuffle=False)
 
 elif args.dataset_type == 'image' and args.model_type != "AlexNet":
@@ -158,7 +161,7 @@ elif args.dataset_type == 'image' and args.model_type != "AlexNet":
                             transforms.ToTensor(),
                             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             ])
-    testset = datasets.ImageFolder('/data/zywang/Dataset/IMAGE10/test', transform = transform)
+    testset = datasets.ImageFolder('/Users/brladder77/Dataset/IMAGE10/test', transform = transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=8, shuffle=False)
 
 elif args.dataset_type == 'image' and args.model_type == "AlexNet":
@@ -168,7 +171,7 @@ elif args.dataset_type == 'image' and args.model_type == "AlexNet":
                                   transforms.ToTensor(),
                                   transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                               ])
-    testset = datasets.ImageFolder('/data/zywang/Dataset/IMAGE10/test', transform = transform)
+    testset = datasets.ImageFolder('/Users/brladder77/Dataset/IMAGE10/test', transform = transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=8, shuffle=False)
 
 #get the information about edge and device
@@ -242,7 +245,7 @@ def partition_algorithm():
             #     partition_way[i].append(0)
             # for j in range(a+1,model_length):
             #     partition_way[i].append(1)
-            
+
               #  partition_way[i].append(random.randint(0,1))
         for i in range(device_num):
             offloading_descision.append(i % edge_num+1)
@@ -253,7 +256,7 @@ def send_msg_to_device_edge(sock_adr, msg):
     send_msg(sock_adr, msg)
 
 
-#cionstruct the part of model for each node
+#construct the part of model for each node
 def part_model_construct(partition_way, models):
     node_models = [None]*len(models)
     for i in range(len(models)):
@@ -280,7 +283,7 @@ def model_send_with_partition(partiiton_way,offloading_descision,models):
         send_edge_msg.start()
 
 
-#the algorithm stops when accuauracy of changed less than 2% in 10 epochs 
+#the algorithm stops when accuauracy of changed less than 2% in 10 epochs
 def train_stop():
     if len(acc_count)<11:
         return False
@@ -339,14 +342,13 @@ else:
         models, optimizers = construct_VGG_cifar([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],lr)
         model_length = 21
 
-
+count = 0
 for model in models:
     model_size = 0
-    count = 0
     if model!=None:
         for para in model.parameters():
             model_size+=sys.getsizeof(para.storage())/(1024*1024)
-        print("layer " +str(count) + "model size " +str(model_size)+"MB")
+        print("layer" +str(count) + " model size " +str(model_size)+"MB")
         count+=1
 start_time = time.time()
 for epoch in range(epoch_max):
@@ -386,7 +388,7 @@ for epoch in range(epoch_max):
 print("The traing process is over")
 
 
- 
+
 #tensor([ 0.0034, -0.0065, -0.0107, -0.0122, -0.0101, -0.0042, -0.0142, -0.0101,
     #     0.0074, -0.0019], requires_grad=True)
 #tensor([ 0.0031, -0.0064, -0.0105, -0.0122, -0.0097, -0.0043, -0.0140, -0.0100,

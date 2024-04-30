@@ -19,13 +19,39 @@ def send_msg(sock, msg):
 
 
 def recv_msg(sock, expect_msg_type=None):
-    msg_len = struct.unpack(">I", sock.recv(4))[0]
-    msg = sock.recv(msg_len, socket.MSG_WAITALL)
-    msg = pickle.loads(msg)
-  #  print(msg[0], 'received from', sock.getpeername())
+    # msg_len = struct.unpack(">I", sock.recv(4))[0]
+    # msg = sock.recv(msg_len, socket.MSG_WAITALL)
+    # msg = pickle.loads(msg)
+    # print(msg[0], 'received from', sock.getpeername())
+    #
+    # if (expect_msg_type is not None) and (msg[0] != expect_msg_type):
+    #     raise Exception("Expected " + expect_msg_type + " but received " + msg[0])
+    # return msg
+    # Read exactly 4 bytes for the message length
+    msg_len_data = b''
+    while len(msg_len_data) < 4:
+        packet = sock.recv(4 - len(msg_len_data))
+        if not packet:
+            raise ConnectionError("Socket connection closed prematurely while reading length")
+        msg_len_data += packet
+    msg_len = struct.unpack(">I", msg_len_data)[0]
 
-    if (expect_msg_type is not None) and (msg[0] != expect_msg_type):
+    # Read the message data based on the length received
+    msg_data = b''
+    while len(msg_data) < msg_len:
+        packet = sock.recv(msg_len - len(msg_data))
+        if not packet:
+            raise ConnectionError("Socket connection closed prematurely during message receipt")
+        msg_data += packet
+
+    # Deserialize the message
+    msg = pickle.loads(msg_data)
+    print(msg[0], 'received from', sock.getpeername())
+
+    # Check if the received message type matches the expected type
+    if expect_msg_type is not None and msg[0] != expect_msg_type:
         raise Exception("Expected " + expect_msg_type + " but received " + msg[0])
+
     return msg
 
 def partition_way_converse(partition):
@@ -43,7 +69,8 @@ def time_count(start_time, end_time):
     
 def printer(content):
     print(content)
-    fid = "result_reocrd/VGG_emnist_hfl_coopfl_fedmec_random.txt"
+    #fid = "/Users/brladder77/result/VGG_emnist_hfl_coopfl_fedmec_random.txt"
+    fid = "/Users/brladder77/result/AlexNet_cifar10_hfl_coopfl_fedmec_random.txt"
     with open(fid,'a') as fid:
         content = content.rstrip('\n') + '\n'
         fid.write(content)
@@ -51,7 +78,7 @@ def printer(content):
 
 def printer_model(content):
     print(content)
-    fid = "/data/zywang/FL_DNN/result_reocrd/20201107.txt"
+    fid = "/Users/brladder77/result/20201107.txt"
     with open(fid,'a') as fid:
         fid.write(str(content))
         fid.flush()

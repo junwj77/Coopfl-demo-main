@@ -48,12 +48,12 @@ parser.add_argument('--edge_ip', type=str, default='192.168.0.101', metavar='N',
 args = parser.parse_args()
 
 
-if True:
-    torch.set_default_tensor_type(torch.cuda.FloatTensor)
-else:
-    torch.set_default_tensor_type(torch.FloatTensor)
+#if True:
+#    torch.set_default_tensor_type(torch.cuda.FloatTensor)
+#else:
+torch.set_default_tensor_type(torch.FloatTensor)
 
-device_gpu = torch.device("cuda" if True else "cpu")
+device_gpu = torch.device("cpu")
 
 device_num = args.device_num
 start_time = time.time()
