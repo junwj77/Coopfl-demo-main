@@ -64,12 +64,12 @@ criterion = nn.NLLLoss()
 
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-listening_sock.bind(('localhost', 50010))
+listening_sock.bind(('192.168.0.69', 50010))
 #listening_sock.bind(('172.16.50.22', 50010))
 
 listening_sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock1.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-listening_sock1.bind(('localhost', 50002))
+listening_sock1.bind(('192.168.0.69', 50002))
 #listening_sock1.bind(('172.16.50.22', 50011))
 
 edge_sock_all = []
@@ -235,16 +235,18 @@ def partition_algorithm():
         for i in range(device_num):
             partition_way.append([])
             partition_way[i].append(0)
-            for j in range(model_length-1):
-                partition_way[i].append(0)
-         #   pooling_layer = [2,5,9,13,17]
-         #   pooling_layer = [1,3,7]
-            # random.shuffle(pooling_layer)
-            # a = pooling_layer[0]
-            # for j in range(1, a+1):
-            #     partition_way[i].append(0)
-            # for j in range(a+1,model_length):
-            #     partition_way[i].append(1)
+            for j in range(model_length-2):
+                partition_way[i].append(1)
+            partition_way[i].append(0)
+            # #pooling_layer = [2,5,9,13,17]
+            # #pooling_layer = [1,3,7]
+            #  #random.shuffle(pooling_layer)
+            #  #a = pooling_layer[0]
+            # #a=4
+            # #for j in range(1, a+1):
+            #  #    partition_way[i].append(0)
+            # #for j in range(a+1,model_length):
+            #  #    partition_way[i].append(1)
 
               #  partition_way[i].append(random.randint(0,1))
         for i in range(device_num):
