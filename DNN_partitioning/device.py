@@ -63,13 +63,13 @@ device_num = args.device_num
 node_num = args.node_num
 
 sock_ps = socket.socket()
-sock_ps.connect(('192.168.0.69', 50010))
+sock_ps.connect(('210.94.179.195', 50010))
 #sock_ps.connect(('172.16.50.22', 50010))
 msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_ps,msg)
 
 sock_edge1 = socket.socket()
-sock_edge1.connect(('0.0.0.0', 51001))
+sock_edge1.connect(('127.0.0.1', 51001))
 msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_edge1,msg)
 sock_edge = []

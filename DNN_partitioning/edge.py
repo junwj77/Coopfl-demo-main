@@ -64,12 +64,12 @@ receive_model = []
 
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-listening_sock.bind(('0.0.0.0', 51001))
+listening_sock.bind(('127.0.0.1', 51001))
 client_sock_all=[]
 
 #connect to the PS
 sock = socket.socket()
-sock.connect(('192.168.0.69', 50002))
+sock.connect(('210.94.179.195', 50002))
 
 device_sock_all=[None]*device_num
 for i in range(device_num):
