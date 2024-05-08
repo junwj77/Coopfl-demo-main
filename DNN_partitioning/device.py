@@ -63,7 +63,7 @@ device_num = args.device_num
 node_num = args.node_num
 
 sock_ps = socket.socket()
-sock_ps.connect(('210.94.179.195', 50010))
+sock_ps.connect(('192.168.0.69', 50010))
 #sock_ps.connect(('172.16.50.22', 50010))
 msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_ps,msg)
