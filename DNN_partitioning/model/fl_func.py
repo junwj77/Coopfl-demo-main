@@ -16,6 +16,7 @@ import math
 
 data_tramission=[]
 
+
 def time_printer(start_time, end_time, model,i,forward,location):
     durasec = int(start_time - end_time)
     duramsec = int((start_time - end_time - int(start_time - end_time)) * 1000)
@@ -27,7 +28,7 @@ def time_printer(start_time, end_time, model,i,forward,location):
             model.copy().get().storage()) / (1024 * 1024), durasec, duramsec))
 
 
-def model_partition(device, edge, partition_way,models):
+def model_partition(device, edge, partition_way, models):
     layer=0
     for model in models:
         if partition_way[layer] == 0:
@@ -37,7 +38,6 @@ def model_partition(device, edge, partition_way,models):
             model.send(edge)
           #  print("world")
         layer += 1
-
 
 
 def all_partition(L):
@@ -161,7 +161,6 @@ def train_partition(x, target, splitNN):
    # end_time = time.time()
    # print(int(1000*(end_time-start_time)))
     return loss
-
 
 
 def train_batch(batch_len, n):
