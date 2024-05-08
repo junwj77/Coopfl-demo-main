@@ -52,7 +52,7 @@ if args.use_gpu == 0:
     torch.set_default_tensor_type(torch.cuda.FloatTensor)
 else:
     torch.set_default_tensor_type(torch.FloatTensor)
-torch.cuda.manual_seed(args.seed) #<--random seed for one GPU
+#torch.cuda.manual_seed(args.seed) #<--random seed for one GPU
 #torch.cuda.manual_seed_all(args.seed) #<--random seed for multiple GPUs
 device_gpu = torch.device("cuda" if args.use_gpu == 0 else "cpu")
 #device_gpu = torch.device("cpu")

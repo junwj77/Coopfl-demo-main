@@ -64,7 +64,7 @@ receive_model = []
 
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-listening_sock.bind(('210.94.189.114', 51001))
+listening_sock.bind(('192.168.0.69', 51001))
 client_sock_all=[]
 
 #connect to the PS
