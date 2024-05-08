@@ -55,6 +55,8 @@ else:
 #torch.cuda.manual_seed(args.seed) #<--random seed for one GPU
 #torch.cuda.manual_seed_all(args.seed) #<--random seed for multiple GPUs
 device_gpu = torch.device("cuda" if args.use_gpu == 0 else "cpu")
+generator = torch.Generator(device=device_gpu)
+
 #device_gpu = torch.device("cpu")
 # Configurations are in a separate config.py file
 
