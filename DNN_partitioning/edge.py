@@ -32,7 +32,7 @@ from util.utils import printer, partition_way_converse, start_forward_layer, sta
 import numpy as np
 from util.utils import send_msg, recv_msg
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+#os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST SVM')
 parser.add_argument('--device_num', type=int, default=30, metavar='N',
@@ -66,7 +66,6 @@ listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 listening_sock.bind(('127.0.0.1', 51001))
 client_sock_all=[]
-
 #connect to the PS
 sock = socket.socket()
 sock.connect(('210.94.179.195', 50002))

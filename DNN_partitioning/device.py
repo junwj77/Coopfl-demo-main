@@ -149,8 +149,8 @@ lr=0.01
 
 
 criterion = nn.NLLLoss()
-local_update = 10
-local_iter = 10
+local_update = 5
+local_iter = 5
 first_epoch_flag = True
 
 
@@ -198,11 +198,11 @@ def local_train(sock, models, partition_way):
                 elif partition_way[i]==0 and partition_way[i-1]==1:
                     msg = recv_msg(sock,'SERVER_TO_CLIENT')
                     start_time = time.time()
-                 #   print(msg[1])
+                    print(msg[1])
                     input[i] = msg[1].to(device_gpu)
             #        input[current_layer] = input[current_layer].detach().requires_grad_()
                     input[i] = input[i].detach().requires_grad_(True)
-                  #  print(input[i])
+                    print(input[i])
                     output[i] = models[i](input[i])
                     end_time = time.time()
                     if local_update == 1:
@@ -336,7 +336,7 @@ while True:
         if args.model_type == "NIN":
             models, optimizers = construct_nin_cifar([0,0,0,0,0,0,0,0,0,0,0,0],lr)
         elif args.model_type == "AlexNet":
-            models, optimizers = construct_AlexNet_cifar([0,0,0,0,0,0,0,0,0,0,0],lr)
+            models, optimizers = construct_AlexNet_cifar([0,1,1,1,1,1,1,1,1,1,0],lr)
         elif args.model_type == "VGG":
             models, optimizers = construct_VGG_cifar([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],lr)
 
