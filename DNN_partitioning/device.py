@@ -336,7 +336,7 @@ while True:
         if args.model_type == "NIN":
             models, optimizers = construct_nin_cifar([0,0,0,0,0,0,0,0,0,0,0,0],lr)
         elif args.model_type == "AlexNet":
-            models, optimizers = construct_AlexNet_cifar([0,0,0,0,0,0,0,0,0,0,0],lr)
+            models, optimizers = construct_AlexNet_cifar([0,1,1,1,1,1,1,1,1,1,0],lr)
         elif args.model_type == "VGG":
             models, optimizers = construct_VGG_cifar([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],lr)
 

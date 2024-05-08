@@ -53,6 +53,7 @@ if True:
 else:
     torch.set_default_tensor_type(torch.FloatTensor)
 
+#device_gpu = torch.device("cuda" if torch.cuda.is_available()  else "cpu")
 device_gpu = torch.device("cpu")
 
 device_num = args.device_num
@@ -143,20 +144,20 @@ def train_model(client_sock, id,start_forward,start_backward, partition_way,inpu
           #  print(msg[5])
             input[current_layer] = msg[5].to(device_gpu)
             input[current_layer] = input[current_layer].detach().requires_grad_()
-          #  print(input[current_layer])
+            print(input[current_layer])
 
             while current_layer+1<len(partition_way):
 
                 start_time = time.time()
                 if partition_way[current_layer]==0 and partition_way[current_layer+1]==0:
-                    output[current_layer] = models[current_layer](input[current_layer])
+                    output[current_layer] = models[current_layer].to(device_gpu)(input[current_layer])
                     input[current_layer+1] = output[current_layer].detach().requires_grad_()
                     current_layer+=1
                     end_time = time.time()
                   #  time_printer(start_time,end_time,input[current_layer],current_layer,1)
 
                 elif partition_way[current_layer]==0 and partition_way[current_layer+1]==1:
-                    output[current_layer] = models[current_layer](input[current_layer])
+                    output[current_layer] = models[current_layer].to(device_gpu)(input[current_layer])
                     input[current_layer+1] = output[current_layer].detach().requires_grad_()
                     end_time = time.time()
                    # time_printer(start_time,end_time,input[current_layer],current_layer,1)
@@ -292,7 +293,7 @@ while True:
                 if args.model_type == "NIN":
                     models[id], optimizers[id] = construct_nin_cifar([0,0,0,0,0,0,0,0,0,0,0,0],lr)
                 elif args.model_type == "AlexNet":
-                    models[id], optimizers[id] = construct_AlexNet_cifar([0,0,0,0,0,0,0,0,0,0,0],lr)
+                    models[id], optimizers[id] = construct_AlexNet_cifar([0,1,1,1,1,1,1,1,1,1,0],lr)
                 elif args.model_type == "VGG":
                     models[id], optimizers[id] = construct_VGG_cifar([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],lr)
             print(partition_way[id])
