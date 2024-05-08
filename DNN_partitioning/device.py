@@ -96,7 +96,7 @@ if args.dataset_type == 'cifar100':
                                     transforms.ToTensor(),
                                     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                                 ])
-    trainset = datasets.ImageFolder('/Users/brladder77/Dataset/cifar100_coopfl/train', transform = transform)
+    trainset = datasets.ImageFolder('~/Coopfl-demo-main/Dataset/cifar100_coopfl/train', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
 
 elif args.dataset_type == 'cifar10':
@@ -106,7 +106,7 @@ elif args.dataset_type == 'cifar10':
                                     transforms.ToTensor(),
                                     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                                 ])
-    trainset = datasets.CIFAR10('/Users/brladder77/Dataset/cifar10', download=True, train=True, transform=transform)
+    trainset = datasets.CIFAR10('~/Coopfl-demo-main/Dataset/cifar10', download=True, train=True, transform=transform)
  #   trainset = datasets.ImageFolder('/data/zywang/Dataset/cifar_coopfl/train', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
 
@@ -118,7 +118,7 @@ elif args.dataset_type == 'emnist':
                            transforms.ToTensor(),
                           transforms.Normalize((0.1307,), (0.3081,))
           ])
-    trainset = datasets.ImageFolder('/Users/brladder77/Dataset/emnist_coopfl', transform = transform)
+    trainset = datasets.ImageFolder('~/Coopfl-demo-main/Dataset/emnist_coopfl', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=256, shuffle=True)
 
 elif args.dataset_type == 'image' and args.model_type != "AlexNet":
@@ -128,7 +128,7 @@ elif args.dataset_type == 'image' and args.model_type != "AlexNet":
                                   transforms.ToTensor(),
                                   transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                               ])
-    trainset = datasets.ImageFolder('/Users/brladder77/Dataset/image_coopfl/train', transform = transform)
+    trainset = datasets.ImageFolder('~/Coopfl-demo-main/Dataset/image_coopfl/train', transform = transform)
     #trainset = datasets.ImageFolder('/data/zywang/PartImagenet/train', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=True)
 
@@ -139,7 +139,7 @@ elif args.dataset_type == 'image' and args.model_type == "AlexNet":
                                   transforms.ToTensor(),
                                   transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                               ])
-    trainset = datasets.ImageFolder('/Users/brladder77/Dataset/image_coopfl/train', transform = transform)
+    trainset = datasets.ImageFolder('~/Coopfl-demo-main/Dataset/image_coopfl/train', transform = transform)
     #trainset = datasets.ImageFolder('/data/zywang/PartImagenet/train', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=True)
 
