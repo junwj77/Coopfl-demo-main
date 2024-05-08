@@ -64,7 +64,7 @@ criterion = nn.NLLLoss()
 
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-listening_sock.bind(('192.168.0.69', 50010))
+listening_sock.bind(('210.94.189.114', 50010))
 #listening_sock.bind(('172.16.50.22', 50010))
 
 listening_sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

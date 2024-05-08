@@ -47,28 +47,28 @@ parser.add_argument('--dataset_type', type=str, default='cifar10', metavar='N', 
                         help='dataset type')
 args = parser.parse_args()
 
-#if args.use_gpu == 0:
-#    print('use gpu')
-#    torch.set_default_tensor_type(torch.cuda.FloatTensor)
-#else:
-torch.set_default_tensor_type(torch.FloatTensor)
-#torch.cuda.manual_seed(args.seed) #<--random seed for one GPU
+if args.use_gpu == 0:
+    print('use gpu')
+    torch.set_default_tensor_type(torch.cuda.FloatTensor)
+else:
+    torch.set_default_tensor_type(torch.FloatTensor)
+torch.cuda.manual_seed(args.seed) #<--random seed for one GPU
 #torch.cuda.manual_seed_all(args.seed) #<--random seed for multiple GPUs
-#device_gpu = torch.device("cuda" if args.use_gpu == 0 else "cpu")
-device_gpu = torch.device("cpu")
+device_gpu = torch.device("cuda" if args.use_gpu == 0 else "cpu")
+#device_gpu = torch.device("cpu")
 # Configurations are in a separate config.py file
 
 device_num = args.device_num
 node_num = args.node_num
 
 sock_ps = socket.socket()
-sock_ps.connect(('192.168.0.69', 50010))
+sock_ps.connect(('210.94.179.2', 50010))
 #sock_ps.connect(('172.16.50.22', 50010))
 msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_ps,msg)
 
 sock_edge1 = socket.socket()
-sock_edge1.connect(('192.168.0.69', 51001))
+sock_edge1.connect(('210.94.179.2', 51001))
 msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_edge1,msg)
 sock_edge = []
