@@ -31,7 +31,7 @@ from model.model_VGG_emnist import construct_VGG_emnist
 from util.utils import printer
 import math
 import numpy.ma as ma
-os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+#os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST SVM')
 parser.add_argument('--device_num', type=int, default=1, metavar='N',

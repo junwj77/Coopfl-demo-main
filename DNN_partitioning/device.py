@@ -55,7 +55,6 @@ else:
 #torch.cuda.manual_seed(args.seed) #<--random seed for one GPU
 #torch.cuda.manual_seed_all(args.seed) #<--random seed for multiple GPUs
 device_gpu = torch.device("cuda" if args.use_gpu == 0 else "cpu")
-generator = torch.Generator(device=device_gpu)
 
 #device_gpu = torch.device("cpu")
 # Configurations are in a separate config.py file
@@ -99,7 +98,7 @@ if args.dataset_type == 'cifar100':
                                     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                                 ])
     trainset = datasets.ImageFolder('~/Coopfl-demo-main/Dataset/cifar100_coopfl/train', transform = transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True, generator = torch.Generator(device=device_gpu))
 
 elif args.dataset_type == 'cifar10':
     transform = transforms.Compose([ 
@@ -110,7 +109,7 @@ elif args.dataset_type == 'cifar10':
                                 ])
     trainset = datasets.CIFAR10('~/Coopfl-demo-main/Dataset/cifar10', download=True, train=True, transform=transform)
  #   trainset = datasets.ImageFolder('/data/zywang/Dataset/cifar_coopfl/train', transform = transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True, generator = torch.Generator(device=device_gpu))
 
 elif args.dataset_type == 'emnist':
     transform = transforms.Compose([
@@ -121,7 +120,7 @@ elif args.dataset_type == 'emnist':
                           transforms.Normalize((0.1307,), (0.3081,))
           ])
     trainset = datasets.ImageFolder('~/Coopfl-demo-main/Dataset/emnist_coopfl', transform = transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=256, shuffle=True)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=256, shuffle=True, generator = torch.Generator(device=device_gpu))
 
 elif args.dataset_type == 'image' and args.model_type != "AlexNet":
     transform = transforms.Compose([  transforms.Resize((224,224)),
@@ -132,7 +131,7 @@ elif args.dataset_type == 'image' and args.model_type != "AlexNet":
                               ])
     trainset = datasets.ImageFolder('~/Coopfl-demo-main/Dataset/image_coopfl/train', transform = transform)
     #trainset = datasets.ImageFolder('/data/zywang/PartImagenet/train', transform = transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=True)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=True, generator = torch.Generator(device=device_gpu))
 
 elif args.dataset_type == 'image' and args.model_type == "AlexNet":
     transform = transforms.Compose([  transforms.Resize((227,227)),
@@ -143,7 +142,7 @@ elif args.dataset_type == 'image' and args.model_type == "AlexNet":
                               ])
     trainset = datasets.ImageFolder('~/Coopfl-demo-main/Dataset/image_coopfl/train', transform = transform)
     #trainset = datasets.ImageFolder('/data/zywang/PartImagenet/train', transform = transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=True)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=True, generator = torch.Generator(device=device_gpu))
 
 
 lr=0.01
