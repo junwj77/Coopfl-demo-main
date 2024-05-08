@@ -69,7 +69,7 @@ msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_ps,msg)
 
 sock_edge1 = socket.socket()
-sock_edge1.connect(('127.0.0.1', 51001))
+sock_edge1.connect(('0.0.0.0', 51001))
 msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_edge1,msg)
 sock_edge = []
