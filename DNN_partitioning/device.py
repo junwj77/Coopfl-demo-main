@@ -26,7 +26,7 @@ from model.model_nin_emnist import construct_nin_emnist
 from model.model_AlexNet_emnist import construct_AlexNet_emnist
 from model.model_VGG_emnist import construct_VGG_emnist
 from util.utils import printer
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST SVM')
 parser.add_argument('--device_num', type=int, default=3, metavar='N',
