@@ -44,13 +44,12 @@ parser.add_argument('--dataset_type', type=str, default='cifar10', metavar='N', 
                         help='dataset type')
 args = parser.parse_args()
 
-#if True:
-#    torch.set_default_tensor_type(torch.cuda.FloatTensor)
-#else:
-torch.set_default_tensor_type(torch.FloatTensor)
-#device_gpu = torch.device("cuda" if True else "cpu")
-device_gpu = torch.device("cpu")
-#only use CPU because of mac
+if True:
+    torch.set_default_tensor_type(torch.cuda.FloatTensor)
+else:
+    torch.set_default_tensor_type(torch.FloatTensor)
+device_gpu = torch.device("cuda" if True else "cpu")
+#device_gpu = torch.device("cpu")
 
 lr = 0.01
 device_num = args.device_num
@@ -101,6 +100,7 @@ for i in range(device_num):
 def test(models, dataloader, dataset_name, epoch, start_time):
     for model in models:
         model.eval()
+        model.to(device_gpu)
     correct = 0
     loss = 0
     with torch.no_grad():

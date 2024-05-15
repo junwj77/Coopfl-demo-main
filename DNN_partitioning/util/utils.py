@@ -18,7 +18,7 @@ def send_msg(sock, msg):
    # print(msg[0], 'sent to', sock.getpeername())
 
 
-def recv_msg(sock, expect_msg_type=None):
+def recv_msg(sock, expect_msg_type=None, map_location=None):
     # msg_len = struct.unpack(">I", sock.recv(4))[0]
     # msg = sock.recv(msg_len, socket.MSG_WAITALL)
     # msg = pickle.loads(msg)
@@ -44,8 +44,25 @@ def recv_msg(sock, expect_msg_type=None):
             raise ConnectionError("Socket connection closed prematurely during message receipt")
         msg_data += packet
 
+    import io
+    use_cuda = torch.cuda.is_available()
+    if map_location is None:
+        map_location = 'cpu' if not use_cuda else None
+
     # Deserialize the message
-    msg = pickle.loads(msg_data)
+    try:
+        buffer = io.BytesIO(msg_data)
+        msg = torch.load(buffer, map_location=map_location)
+    except (RuntimeError, pickle.UnpicklingError) as e:
+        if isinstance(e, RuntimeError) and 'CUDA' in str(e):
+            buffer.seek(0)
+            msg = torch.load(buffer, map_location='cpu')
+        else:
+            msg = pickle.loads(msg_data)
+
+
+    # Deserialize the message
+    #msg = pickle.loads(msg_data)
     print(msg[0], 'received from', sock.getpeername())
 
     # Check if the received message type matches the expected type

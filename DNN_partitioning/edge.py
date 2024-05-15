@@ -132,7 +132,7 @@ def train_model(client_sock, id,start_forward,start_backward, partition_way,inpu
     global receive_model
     #start training
     while True:
-        msg = recv_msg(client_sock,'CLIENT_TO_SERVER')
+        msg = recv_msg(client_sock,'CLIENT_TO_SERVER', map_location=device_gpu)
         if msg[2] == 0: #forward
             if msg[4]==start_forward:#initiation
                 start_forward==-1
@@ -241,7 +241,7 @@ while True:
     memory_edge = 10*1024
     msg = ['CLIENT_TO_SERVER',compute_edge,communication_edge,memory_edge]
     send_msg(sock,msg)
-    msg = recv_msg(sock,'SERVER_TO_CLIENT')
+    msg = recv_msg(sock,'SERVER_TO_CLIENT', map_location=device_gpu)
     global_model = copy.deepcopy(msg[1])
   #  receive_model = scale_model(msg[1],0)
     global_partition = msg[2]
