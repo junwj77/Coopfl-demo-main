@@ -2,6 +2,7 @@
 import socket
 import time
 import torch
+import pickle
 import sys
 import time
 from torchvision import datasets, transforms
@@ -48,10 +49,10 @@ parser.add_argument('--edge_ip', type=str, default='192.168.0.101', metavar='N',
 args = parser.parse_args()
 
 
-if True:
-    torch.set_default_tensor_type(torch.cuda.FloatTensor)
-else:
-    torch.set_default_tensor_type(torch.FloatTensor)
+#if True:
+ #   torch.set_default_tensor_type(torch.cuda.FloatTensor)
+#else:
+torch.set_default_tensor_type(torch.FloatTensor)
 
 #device_gpu = torch.device("cuda" if torch.cuda.is_available()  else "cpu")
 device_gpu = torch.device("cpu")
@@ -65,12 +66,12 @@ receive_model = []
 
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-listening_sock.bind(('127.0.0.1', 51001))
+listening_sock.bind(('192.168.0.69', 51001))
 client_sock_all=[]
 
 #connect to the PS
 sock = socket.socket()
-sock.connect(('210.94.179.195', 50002))
+sock.connect(('210.94.189.114', 50002))
 
 device_sock_all=[None]*device_num
 for i in range(device_num):

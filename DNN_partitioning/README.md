@@ -7,8 +7,12 @@ This is the code for CoopFL based on pytorch, which contains predefined models o
 You should initilize PS, edge and device in order. For example, if we want to run a system with one PS, edge server and device for training NIN over Cifar10,
 
 * python PS.py --device_num 1 --edge_number 1 --model_type 'NIN' --dataset_type 'cifar10' 
-* python edge.py --device_num 1 --model_type 'NIN' --dataset_type 'cifar10' 
+* python PS.py --device_num 1 --edge_number 1 --model_type 'AlexNet' --dataset_type 'cifar10'
+* python edge.py --device_num 1 --model_type 'NIN' --dataset_type 'cifar10'
+* python edge.py --device_num 1 --model_type 'AlexNet' --dataset_type 'cifar10' 
 * python device.py --device_num 1 --node_num 1 --use_gpu 0 --model_type 'NIN' --dataset_type 'cifar10'
+* python device.py --device_num 1 --node_num 1 --use_gpu 0 --model_type 'AlexNet' --dataset_type 'cifar10'
+
 
 You can change those settings including device_num, edge_number, model_type and dataset_type. By using "--model_type 'AlexNet' --dataset_type 'Emnist' ", you can train alexnet over emnist.
 

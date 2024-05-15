@@ -64,12 +64,12 @@ criterion = nn.NLLLoss()
 
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-listening_sock.bind(('192.168.0.69', 50010))
+listening_sock.bind(('127.0.0.1', 50010))
 #listening_sock.bind(('172.16.50.22', 50010))
 
 listening_sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock1.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-listening_sock1.bind(('192.168.0.69', 50002))
+listening_sock1.bind(('210.94.189.114', 50002))
 #listening_sock1.bind(('172.16.50.22', 50011))
 
 edge_sock_all = []
@@ -141,7 +141,8 @@ elif args.dataset_type == 'cifar10':
                                     transforms.ToTensor(),
                                     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                                 ])
-    testset = datasets.CIFAR10('/Users/brladder77/Dataset/cifar10', transform=transform)
+    #testset = datasets.CIFAR10('/Users/brladder77/Dataset/cifar10', transform=transform)
+    testset = datasets.CIFAR10('~/Coopfl-demo-main/Dataset/cifar10', transform=transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=256, shuffle=False)
 
 elif args.dataset_type == 'emnist':

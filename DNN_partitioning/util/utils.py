@@ -70,7 +70,8 @@ def time_count(start_time, end_time):
 def printer(content):
     print(content)
     #fid = "/Users/brladder77/result/VGG_emnist_hfl_coopfl_fedmec_random.txt"
-    fid = "/Users/brladder77/result/AlexNet_cifar10_hfl_coopfl_fedmec_random(local_manual).txt"
+    #fid = "/Users/brladder77/result/AlexNet_cifar10_hfl_coopfl_fedmec_random(local_manual).txt"
+    fid = "/home/doyoung/Coopfl-demo-main/result/AlexNet_cifar10_hfl_coopfl_fedmec_random_sls.txt"
     with open(fid,'a') as fid:
         content = content.rstrip('\n') + '\n'
         fid.write(content)
