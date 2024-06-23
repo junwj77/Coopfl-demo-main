@@ -96,7 +96,8 @@ def printer(content):
 
 def printer_model(content):
     print(content)
-    fid = "/Users/brladder77/result/20201107.txt"
+    #fid = "/Users/brladder77/result/20240516.txt"
+    fid = "/home/doyoung/Coopfl-demo-main/result/20240530.txt"
     with open(fid,'a') as fid:
         fid.write(str(content))
         fid.flush()

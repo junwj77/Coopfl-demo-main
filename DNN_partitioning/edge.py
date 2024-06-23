@@ -49,13 +49,13 @@ parser.add_argument('--edge_ip', type=str, default='192.168.0.101', metavar='N',
 args = parser.parse_args()
 
 
-#if True:
- #   torch.set_default_tensor_type(torch.cuda.FloatTensor)
-#else:
-torch.set_default_tensor_type(torch.FloatTensor)
+if True:
+   torch.set_default_tensor_type(torch.cuda.FloatTensor)
+else:
+    torch.set_default_tensor_type(torch.FloatTensor)
 
-#device_gpu = torch.device("cuda" if torch.cuda.is_available()  else "cpu")
-device_gpu = torch.device("cpu")
+device_gpu = torch.device("cuda" if torch.cuda.is_available()  else "cpu")
+#device_gpu = torch.device("cpu")
 
 device_num = args.device_num
 start_time = time.time()
@@ -66,7 +66,7 @@ receive_model = []
 
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-listening_sock.bind(('192.168.0.69', 51001))
+listening_sock.bind(('210.94.189.114', 51002))
 client_sock_all=[]
 
 #connect to the PS
@@ -135,7 +135,7 @@ def train_model(client_sock, id,start_forward,start_backward, partition_way,inpu
         msg = recv_msg(client_sock,'CLIENT_TO_SERVER', map_location=device_gpu)
         if msg[2] == 0: #forward
             if msg[4]==start_forward:#initiation
-                start_forward==-1
+                start_forward=-1
                 for i in range(0, len(partition_way)):
                     if partition_way[i]==0:
                         models[i].train()  
@@ -144,8 +144,8 @@ def train_model(client_sock, id,start_forward,start_backward, partition_way,inpu
           #  msg[5] = msg[5].detach().requires_grad_()
           #  print(msg[5])
             input[current_layer] = msg[5].to(device_gpu)
-            input[current_layer] = input[current_layer].detach().requires_grad_()
-            print(input[current_layer])
+            ##input[current_layer] = input[current_layer].detach().requires_grad_()
+            #print(input[current_layer])
 
             while current_layer+1<len(partition_way):
 
@@ -203,7 +203,7 @@ def train_model(client_sock, id,start_forward,start_backward, partition_way,inpu
             #    for para in model.parameters():
               #      printer_model(para)
             receive_model.append(models)
-         #   test(receive_model[0], testloader, "Test set",998)
+         #   test(receive_model[0]device_num = args.device_num, testloader, "Test set",998)
            # test(models, testloader, "Test set", 999)
 
          #   for model in receive_model:
@@ -294,19 +294,20 @@ while True:
                 if args.model_type == "NIN":
                     models[id], optimizers[id] = construct_nin_cifar([0,0,0,0,0,0,0,0,0,0,0,0],lr)
                 elif args.model_type == "AlexNet":
-                    models[id], optimizers[id] = construct_AlexNet_cifar([0,1,1,1,1,1,1,1,1,1,0],lr)
+                    models[id], optimizers[id] = construct_AlexNet_cifar([0,0,0,0,0,0,0,0,0,0,0],lr)
                 elif args.model_type == "VGG":
                     models[id], optimizers[id] = construct_VGG_cifar([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],lr)
             print(partition_way[id])
             for j in range(0,len(global_model)):
                 if partition_way[id][j] == 0:
                     models[id][j] = copy.deepcopy(global_model[j])
+                    models[id][j] = models[id][j].to(device_gpu)
             for j in range(len(optimizers[id])):
                 if optimizers[id][j]!=None and partition_way[id][j]==0:
-                    optimizers[id][j]= optim.SGD(params = models[id][j].parameters(), lr = lr)
+                    optimizers[id][j] = optim.SGD(params = models[id][j].parameters(), lr = lr)
             #model in GPU
             client.append(threading.Thread(target=train_model, 
-                        args=(device_sock_all[i], id,start_forward[id],start_backward[id], partition_way[id],input[id],output[id],models[id],optimizers[id])))
+                        args=(device_sock_all[i], id, start_forward[id], start_backward[id], partition_way[id],input[id],output[id],models[id],optimizers[id])))
             client[id].start()
     for i in range(len(client)):
         client[i].join()

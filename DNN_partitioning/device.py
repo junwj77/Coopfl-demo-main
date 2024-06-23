@@ -47,29 +47,33 @@ parser.add_argument('--dataset_type', type=str, default='cifar10', metavar='N', 
                         help='dataset type')
 args = parser.parse_args()
 
-if args.use_gpu == 0:
-    print('use gpu')
-    torch.set_default_tensor_type(torch.cuda.FloatTensor)
-else:
-    torch.set_default_tensor_type(torch.FloatTensor)
+##if args.use_gpu == 0:
+ #   print('use gpu')
+##    torch.set_default_tensor_type(torch.cuda.FloatTensor)
+##else:
+##    torch.set_default_tensor_type(torch.FloatTensor)
+torch.set_default_tensor_type(torch.FloatTensor)
+
 #torch.cuda.manual_seed(args.seed) #<--random seed for one GPU
 #torch.cuda.manual_seed_all(args.seed) #<--random seed for multiple GPUs
-device_gpu = torch.device("cuda" if args.use_gpu == 0 else "cpu")
+##device_gpu = torch.device("cuda" if args.use_gpu == 0 else "cpu")
+device_gpu = torch.device("cpu")
 
-#device_gpu = torch.device("cpu")
 # Configurations are in a separate config.py file
 
 device_num = args.device_num
 node_num = args.node_num
 
 sock_ps = socket.socket()
-sock_ps.connect(('127.0.0.1', 50010))
+#sock_ps.connect(('127.0.0.1', 50010))
+sock_ps.connect(('210.94.189.114', 50010))
 #sock_ps.connect(('172.16.50.22', 50010))
 msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_ps,msg)
 
 sock_edge1 = socket.socket()
-sock_edge1.connect(('210.94.179.195', 51001))
+#sock_edge1.connect(('127.0.0.1', 51001))
+sock_edge1.connect(('210.94.189.114', 51002))
 msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_edge1,msg)
 sock_edge = []
@@ -108,6 +112,7 @@ elif args.dataset_type == 'cifar10':
                                     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
                                 ])
     trainset = datasets.CIFAR10('~/Coopfl-demo-main/Dataset/cifar10', download=True, train=True, transform=transform)
+    #trainset = datasets.CIFAR10('/Users/brladder77/Dataset/cifar10', download=True, train=True, transform=transform)
  #   trainset = datasets.ImageFolder('/data/zywang/Dataset/cifar_coopfl/train', transform = transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True, generator = torch.Generator(device=device_gpu))
 
@@ -169,7 +174,7 @@ def local_train(sock, models, partition_way):
             count+=1
             if count%10 == 0:
                 print("batch_training"+str(count))
-            images= images.to(device_gpu)
+            images = images.to(device_gpu)
             labels = labels.to(device_gpu)
  
             start_time = time.time()
@@ -201,9 +206,10 @@ def local_train(sock, models, partition_way):
                  #   print(msg[1])
                     input[i] = msg[1].to(device_gpu)
             #        input[current_layer] = input[current_layer].detach().requires_grad_()
-                    input[i] = input[i].detach().requires_grad_(True)
+                    ##input[i] = input[i].detach().requires_grad_(True)
                   #  print(input[i])
                     output[i] = models[i](input[i])
+                    #output[i] = models[i].to(device_gpu)(input[i])
                     end_time = time.time()
                     if local_update == 1:
                         compute_device[0][i] += time_count(start_time, end_time)
@@ -229,7 +235,7 @@ def local_train(sock, models, partition_way):
             if partition_way[len(models)-1]==0:
                 start_time = time.time()
                 loss.backward()
-                end_time = time.time()        
+                end_time = time.time()
                 compute_device[1][len(compute_device)-1] += time_count(start_time, end_time)
            #     time_printer(start_time,end_time,input[len(models)-1],len(models),0)
 
@@ -264,8 +270,8 @@ def local_train(sock, models, partition_way):
                     optimizers[i].step()
             
         if local_update ==1:
-            for  i in range(len(compute_device)):
-                for  j in range(len(compute_device[i])):
+            for i in range(len(compute_device)):
+                for j in range(len(compute_device[i])):
                     compute_device[i][j] = compute_device[i][j]/(local_iter)
 
     msg = ['CLIENT_TO_SERVER',ep,4,node_num,0,models]
@@ -307,7 +313,7 @@ while True:
     partition_way = msg[1]
     offloading_descision = msg[2]
  #   if offloading_descision[node_num-1] == 1:
-    msg = recv_msg(sock_edge[offloading_descision[node_num-1]-1], 'SERVER_TO_CLIENT')
+    msg = recv_msg(sock_edge[offloading_descision[node_num-1]-1], 'SERVER_TO_CLIENT',  device_gpu)
     model_size = 0
     for model in msg[1]:
         if model!=None:
@@ -336,7 +342,7 @@ while True:
         if args.model_type == "NIN":
             models, optimizers = construct_nin_cifar([0,0,0,0,0,0,0,0,0,0,0,0],lr)
         elif args.model_type == "AlexNet":
-            models, optimizers = construct_AlexNet_cifar([0,1,1,1,1,1,1,1,1,1,0],lr)
+            models, optimizers = construct_AlexNet_cifar([0,0,0,0,0,0,0,0,0,0,0],lr)
         elif args.model_type == "VGG":
             models, optimizers = construct_VGG_cifar([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],lr)
 

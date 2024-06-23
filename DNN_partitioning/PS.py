@@ -45,7 +45,7 @@ parser.add_argument('--dataset_type', type=str, default='cifar10', metavar='N', 
 args = parser.parse_args()
 
 if True:
-    torch.set_default_tensor_type(torch.cuda.FloatTensor)
+   torch.set_default_tensor_type(torch.cuda.FloatTensor)
 else:
     torch.set_default_tensor_type(torch.FloatTensor)
 device_gpu = torch.device("cuda" if True else "cpu")
@@ -63,7 +63,7 @@ criterion = nn.NLLLoss()
 
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-listening_sock.bind(('127.0.0.1', 50010))
+listening_sock.bind(('210.94.189.114', 50010))
 #listening_sock.bind(('172.16.50.22', 50010))
 
 listening_sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -223,22 +223,26 @@ def Get_commp_comm_mem_of_device_edge(str,epoch):
         model_transmission = [4.0,1.0,3.0,0.75,1.5,1,1,0.25,1,1,0.002]
         model_size = [0.133,0,2.345,0,3.377,5.054,3.377,0,144.016,64.016,15.629,0]
         layer_memory = 2*(model_size + model_transmission)
-    partiiton_way, offloading_descision = partition_algorithm()
-    return partiiton_way, offloading_descision
+    partition_way, offloading_decision = partition_algorithm()
+    return partition_way, offloading_decision
 
 
 
 def partition_algorithm():
    # if epoch == 0 or epoch >4:
     if True:
-        partition_way = []
-        offloading_descision = []
-        for i in range(device_num):
-            partition_way.append([])
-            partition_way[i].append(0)
-            for j in range(model_length-2):
-                partition_way[i].append(1)
-            partition_way[i].append(0)
+        partition_way=[]
+        partition_way = [[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]]
+        partition_way = [[0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0]]
+        #partition_way = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        offloading_decision = []
+
+        # for i in range(device_num):
+        #     partition_way.append([])
+        #     partition_way[i].append(0)
+        #     for j in range(model_length-2):
+        #         partition_way[i].append(1)
+        #     partition_way[i].append(0)
             # #pooling_layer = [2,5,9,13,17]
             # #pooling_layer = [1,3,7]
             #  #random.shuffle(pooling_layer)
@@ -251,8 +255,8 @@ def partition_algorithm():
 
               #  partition_way[i].append(random.randint(0,1))
         for i in range(device_num):
-            offloading_descision.append(i % edge_num+1)
-    return partition_way, offloading_descision
+            offloading_decision.append(i % edge_num+1)
+    return partition_way, offloading_decision
 
 
 def send_msg_to_device_edge(sock_adr, msg):
@@ -269,18 +273,18 @@ def part_model_construct(partition_way, models):
 
 
 #initation the model and send to devices and edges
-def model_send_with_partition(partiiton_way,offloading_descision,models):
+def model_send_with_partition(partition_way,offloading_decision,models):
     send_device=[]
     for i in range(device_num):
-      #  model_device = part_model_construct(partiiton_way[i], models)
-        msg = ['SERVER_TO_CLIENT', partiiton_way[i], offloading_descision]
+      #  model_device = part_model_construct(partition_way[i], models)
+        msg = ['SERVER_TO_CLIENT', partition_way[i], offloading_decision]
         send_device_msg = threading.Thread(target=send_msg_to_device_edge, args=(device_sock_all[i], msg))
         send_device_msg.start()
 
        # send_msg(device_sock_all[i],msg)
 
     for i in range(edge_num):
-        msg = ['SERVER_TO_CLIENT', models ,partition_way, offloading_descision, time.time()]
+        msg = ['SERVER_TO_CLIENT', models ,partition_way, offloading_decision, time.time()]
         #send_msg(edge_sock_all[i], msg )
         send_edge_msg = threading.Thread(target=send_msg_to_device_edge, args=(edge_sock_all[i], msg))
         send_edge_msg.start()
@@ -298,15 +302,15 @@ def train_stop():
         return False
 
 
-def rev_msg_edge(sock,epoch,edge_id,offloading_descision):
+def rev_msg_edge(sock,epoch,edge_id,offloading_decision):
     global rec_models
     global rec_time
     msg = recv_msg(sock,"CLIENT_TO_SERVER")
-  #  models = copy.deepcopy(scale_model(msg[1],offloading_descision.count(edge_id)/len(offloading_descision)))
-    if offloading_descision.count(edge_id)!=0:
-        rec_models.append(scale_model(msg[1],float(offloading_descision.count(edge_id)/len(offloading_descision))))
+  #  models = copy.deepcopy(scale_model(msg[1],offloading_decision.count(edge_id)/len(offloading_decision)))
+    if offloading_decision.count(edge_id)!=0:
+        rec_models.append(scale_model(msg[1],float(offloading_decision.count(edge_id)/len(offloading_decision))))
         rec_time[epoch].append(time.time()-msg[2]+msg[3])
-    print(msg[3], offloading_descision.count(edge_id)/len(offloading_descision))
+    print(msg[3], offloading_decision.count(edge_id)/len(offloading_decision))
  #   rec_time[epoch].append(time.time()-msg[2]+msg[3])
 
 rec_models = []
@@ -357,9 +361,9 @@ start_time = time.time()
 for epoch in range(epoch_max):
     rec_time.append([])
     print(acc_count)
-    partition_way, offloading_descision = Get_commp_comm_mem_of_device_edge(args.model_type,epoch)
-    printer("partition_way_and_offloading_descision {},{} ".format(partition_way,offloading_descision))
-    model_send_with_partition(partition_way, offloading_descision, models)
+    partition_way, offloading_decision = Get_commp_comm_mem_of_device_edge(args.model_type,epoch)
+    printer("partition_way_and_offloading_decision {},{} ".format(partition_way,offloading_decision))
+    model_send_with_partition(partition_way, offloading_decision, models)
   #  print("epoch"+str(epoch)+'before update'+'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
   #  for model in models:
    #     for para in model.parameters():
@@ -368,7 +372,7 @@ for epoch in range(epoch_max):
     for i in range(edge_num):
        # msg = recv_msg(device_sock_all[i],"CLIENT_TO_SERVER") #get the parameter [0,weight]
         print("rec models")
-        rev_msg_d.append(threading.Thread(target = rev_msg_edge, args = (edge_sock_all[i],epoch, i+1,offloading_descision)))
+        rev_msg_d.append(threading.Thread(target = rev_msg_edge, args = (edge_sock_all[i],epoch, i+1, offloading_decision)))
         rev_msg_d[i].start()
     for i in range(edge_num):
         rev_msg_d[i].join()
@@ -388,7 +392,7 @@ for epoch in range(epoch_max):
     if train_stop():
         break
 
-print("The traing process is over")
+print("The traning process is over")
 
 
 
