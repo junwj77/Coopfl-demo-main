@@ -65,14 +65,14 @@ device_num = args.device_num
 node_num = args.node_num
 
 sock_ps = socket.socket()
-#sock_ps.connect(('127.0.0.1', 50010))
+##sock_ps.connect(('127.0.0.1', 50010))
 sock_ps.connect(('210.94.189.114', 50010))
 #sock_ps.connect(('172.16.50.22', 50010))
 msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_ps,msg)
 
 sock_edge1 = socket.socket()
-#sock_edge1.connect(('127.0.0.1', 51001))
+##sock_edge1.connect(('127.0.0.1', 51001))
 sock_edge1.connect(('210.94.189.114', 51002))
 msg = ['CLIENT_TO_SERVER',node_num-1]
 send_msg(sock_edge1,msg)
@@ -205,8 +205,10 @@ def local_train(sock, models, partition_way):
                     start_time = time.time()
                  #   print(msg[1])
                     input[i] = msg[1].to(device_gpu)
+                    ##if not input[i].is_leaf:
+                    ##    input[i].retain_grad()  # 그래디언트 보존 설정
             #        input[current_layer] = input[current_layer].detach().requires_grad_()
-                    ##input[i] = input[i].detach().requires_grad_(True)
+                    input[i] = input[i].detach().requires_grad_(True)
                   #  print(input[i])
                     output[i] = models[i](input[i])
                     #output[i] = models[i].to(device_gpu)(input[i])

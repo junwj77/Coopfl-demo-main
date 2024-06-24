@@ -48,7 +48,8 @@ if True:
    torch.set_default_tensor_type(torch.cuda.FloatTensor)
 else:
     torch.set_default_tensor_type(torch.FloatTensor)
-device_gpu = torch.device("cuda" if True else "cpu")
+
+device_gpu = torch.device("cuda" if torch.cuda.is_available()  else "cpu")
 #device_gpu = torch.device("cpu")
 
 lr = 0.01
@@ -64,11 +65,13 @@ criterion = nn.NLLLoss()
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 listening_sock.bind(('210.94.189.114', 50010))
+##listening_sock.bind(('127.0.0.1', 50010))
 #listening_sock.bind(('172.16.50.22', 50010))
 
 listening_sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock1.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 listening_sock1.bind(('210.94.189.114', 50002))
+##listening_sock1.bind(('127.0.0.1', 50002))
 #listening_sock1.bind(('172.16.50.22', 50011))
 
 edge_sock_all = []
@@ -232,7 +235,7 @@ def partition_algorithm():
    # if epoch == 0 or epoch >4:
     if True:
         partition_way=[]
-        partition_way = [[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]]
+        #partition_way = [[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]]
         partition_way = [[0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0]]
         #partition_way = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
         offloading_decision = []

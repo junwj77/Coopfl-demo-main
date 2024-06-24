@@ -67,11 +67,14 @@ receive_model = []
 listening_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 listening_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 listening_sock.bind(('210.94.189.114', 51002))
+##listening_sock.bind(('127.0.0.1', 51001))
 client_sock_all=[]
 
 #connect to the PS
 sock = socket.socket()
 sock.connect(('210.94.189.114', 50002))
+##sock.connect(('127.0.0.1', 50002))
+
 
 device_sock_all=[None]*device_num
 for i in range(device_num):
@@ -144,7 +147,10 @@ def train_model(client_sock, id,start_forward,start_backward, partition_way,inpu
           #  msg[5] = msg[5].detach().requires_grad_()
           #  print(msg[5])
             input[current_layer] = msg[5].to(device_gpu)
-            ##input[current_layer] = input[current_layer].detach().requires_grad_()
+            ##if not input[current_layer].is_leaf:
+            ##    input[current_layer].retain_grad()  # 그래디언트 보존 설정
+
+            input[current_layer] = input[current_layer].detach().requires_grad_()
             #print(input[current_layer])
 
             while current_layer+1<len(partition_way):
@@ -183,6 +189,8 @@ def train_model(client_sock, id,start_forward,start_backward, partition_way,inpu
                 end_time= time.time()
              #   time_printer(start_time,end_time,input[current_layer].grad,current_layer,0)
                 current_layer -= 1
+            ##if not input[current_layer].is_leaf:
+            ##    input[current_layer].retain_grad()  # 그래디언트 보존 재확인
             grad_in = input[current_layer].grad
             msg_send = ['SERVER_TO_CLIENT',grad_in]
             send_msg(client_sock, msg_send)   
